@@ -2870,7 +2870,11 @@ LOFLOAT_HOST_DEVICE LOFLOAT_FORCEINLINE From_p virtual_round(From_p& value, Floa
                                     ? (1 << (ToFp.bitwidth - ToFp.mantissa_bits - 1)) - 1 - ToFp.bias
                                     : (1 << (ToFp.bitwidth - ToFp.mantissa_bits)) - 1 - ToFp.bias;
     const int ToMin_exp = 1 - ToFp.bias;
-    const float To_min_val = std::pow(2.0, ToMin_exp)*std::pow(2.0, -ToFp.mantissa_bits);
+    // denorm_min = 2^(ToMin_exp - mantissa_bits). ldexpf builds the power of two
+    // exactly; the old std::pow(2.0, ...) pair cost ~150 FP64 ops per element on
+    // device (FP64 is 1/64 rate on consumer GPUs) and made the CUDA kernel
+    // compute-bound. Bit-identical result, incl. underflow to 0 below 2^-149.
+    const float To_min_val = ldexpf(1.0f, ToMin_exp - ToFp.mantissa_bits);
 
     // Largest finite magnitude of the target as a double. The naive
     // 2^ToMax_exp*(2-2^-m) overshoots for P3109/_754 formats that reserve some
@@ -2891,8 +2895,8 @@ LOFLOAT_HOST_DEVICE LOFLOAT_FORCEINLINE From_p virtual_round(From_p& value, Floa
         const int exp_field = static_cast<int>((max_rep >> ToFp.mantissa_bits)
                                                & ((uint64_t{1} << exp_bits) - 1));
         const uint64_t mant = max_rep & ((uint64_t{1} << ToFp.mantissa_bits) - 1);
-        const double frac = 1.0 + static_cast<double>(mant) * std::pow(2.0, -ToFp.mantissa_bits);
-        return std::pow(2.0, exp_field - ToFp.bias) * frac;
+        const double frac = 1.0 + static_cast<double>(mant) * ldexp(1.0, -ToFp.mantissa_bits);
+        return ldexp(1.0, exp_field - ToFp.bias) * frac;   // same op order as the old pow() form
     };
 
     // lof_abs (not abs): device-correct magnitude for native float/double; see note.
