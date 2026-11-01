@@ -3660,10 +3660,11 @@ static LOFLOAT_HOST void run(const From* from,
     auto load_from_widened = [&](int i) -> WideBitsSIMD {
         if constexpr (sizeof(FromBits) == sizeof(WideBits)) {
             return xs::bit_cast<WideBitsSIMD>(
-                FromBitsSIMD::load_aligned(&from_bits_ptr[i])
+                // caller's buffer (e.g. std::vector) — no SIMD alignment guarantee
+                FromBitsSIMD::load_unaligned(&from_bits_ptr[i])
             );
         } else {
-            WideBits tmp[step];
+            alignas(64) WideBits tmp[step];
             [&]<std::size_t... Is>(std::index_sequence<Is...>) {
                 ((tmp[Is] = static_cast<WideBits>(from_bits_ptr[i + Is])), ...);
             }(std::make_index_sequence<step>{});
@@ -3673,7 +3674,7 @@ static LOFLOAT_HOST void run(const From* from,
 
     auto store_to_full = [&](int i, const WideBitsSIMD& v) {
         if constexpr (sizeof(ToBits) == sizeof(WideBits)) {
-            xs::bit_cast<ToBitsSIMD>(v).store_aligned(&to_bits_ptr[i]);
+            xs::bit_cast<ToBitsSIMD>(v).store_unaligned(&to_bits_ptr[i]);
         } else {
             alignas(64) WideBits tmp[step];
             v.store_aligned(tmp);

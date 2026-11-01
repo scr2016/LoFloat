@@ -63,7 +63,7 @@ else
   $(info OpenMP: not available)
 endif
 # ---- Targets ----
-TARGETS := vec_round axpy_bench
+TARGETS := vec_round axpy_bench vec_add virtual_round
 
 SRC_ROUND := vec_round.cpp
 SRC_AXPY  := axpy_bench.cpp
@@ -88,4 +88,3 @@ vec_add: $(SRC_ADD)
 
 clean:
 	@rm -f $(TARGETS)
-
