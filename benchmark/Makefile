@@ -18,12 +18,13 @@ LDLIBS   ?=
 # OS detection
 UNAME_S := $(shell uname -s)
 
-# TORCH_INCLUDES := $(shell python3 -c "import torch.utils.cpp_extension; print(' '.join(['-I' + p for p in torch.utils.cpp_extension.include_paths()]))")
-# TORCH_LDFLAGS  := $(shell python3 -c "import torch.utils.cpp_extension; print(' '.join(['-L' + p for p in torch.utils.cpp_extension.library_paths()]))")
-# TORCH_LIBS     := -ltorch -ltorch_cpu -lc10
-
-# CXXFLAGS += $(TORCH_INCLUDES)
-# LDFLAGS  += $(TORCH_LDFLAGS) $(TORCH_LIBS) -Wl,-rpath,$(shell python3 -c "import torch.utils.cpp_extension; print(':'.join(torch.utils.cpp_extension.library_paths()))")
+# Torch (only virtual_round needs it) — queried from the active Python/torch
+# install. Recursive (=) so python only runs when a Torch target is built.
+PYTHON         ?= python3
+TORCH_INCLUDES  = $(shell $(PYTHON) -c "import torch.utils.cpp_extension as c; print(' '.join('-I'+p for p in c.include_paths()))")
+TORCH_LIBDIRS   = $(shell $(PYTHON) -c "import torch.utils.cpp_extension as c; print(':'.join(c.library_paths()))")
+TORCH_LDFLAGS   = $(addprefix -L,$(subst :, ,$(TORCH_LIBDIRS))) -Wl,-rpath,$(TORCH_LIBDIRS)
+TORCH_LIBS      = -ltorch -ltorch_cpu -lc10
 
 # Default (Linux GCC / Clang)
 OPENMP_CXXFLAGS := -fopenmp
@@ -80,7 +81,7 @@ axpy_bench: $(SRC_AXPY)
 	$(CXX) $(CXXFLAGS) $(INCLUDE_PATH) $< -o $@ $(LDFLAGS) $(LDLIBS)
 
 virtual_round: $(SRC_VIRTUAL)
-	$(CXX) $(CXXFLAGS) $(INCLUDE_PATH) $< -o $@ $(LDFLAGS) $(LDLIBS)
+	$(CXX) $(CXXFLAGS) $(INCLUDE_PATH) $(TORCH_INCLUDES) $< -o $@ $(LDFLAGS) $(TORCH_LDFLAGS) $(LDLIBS) $(TORCH_LIBS)
 
 vec_add: $(SRC_ADD)
 	$(CXX) $(CXXFLAGS) $(INCLUDE_PATH) $< -o $@ $(LDFLAGS) $(LDLIBS)

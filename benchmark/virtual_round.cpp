@@ -96,7 +96,7 @@ BenchResult<float> bench_virtual_round(
 
         // Warmup
         for (int i = 0; i < warmup_iters; i++) {
-            lo_float::virtual_round(in_ptr, out_ptr, n, ToFp, mode);
+            lo_float::virtual_round(in_ptr, out_ptr, n, ToFp, lo_float::ProjSpec(mode));
             g_sink += out_ptr[i % n];
         }
 
@@ -111,7 +111,7 @@ BenchResult<float> bench_virtual_round(
 
         for (int i = 0; i < iters_used; i++) {
             auto t0 = std::chrono::steady_clock::now();
-            lo_float::virtual_round(in_ptr, out_ptr, n, ToFp, mode);
+            lo_float::virtual_round(in_ptr, out_ptr, n, ToFp, lo_float::ProjSpec(mode));
             auto t1 = std::chrono::steady_clock::now();
             g_sink += out_ptr[(i * 17) % n];
 
@@ -221,7 +221,7 @@ BenchResult<float> bench_virtual_round_half(
 
         // Warmup
         for (int i = 0; i < warmup_iters; i++) {
-            lo_float::virtual_round(in_ptr, out_ptr, n, ToFp, mode);
+            lo_float::virtual_round(in_ptr, out_ptr, n, ToFp, lo_float::ProjSpec(mode));
             g_sink += out_ptr[i % n];
         }
 
@@ -236,7 +236,7 @@ BenchResult<float> bench_virtual_round_half(
 
         for (int i = 0; i < iters_used; i++) {
             auto t0 = std::chrono::steady_clock::now();
-            lo_float::virtual_round(in_ptr, out_ptr, n, ToFp, mode);
+            lo_float::virtual_round(in_ptr, out_ptr, n, ToFp, lo_float::ProjSpec(mode));
             auto t1 = std::chrono::steady_clock::now();
             g_sink += out_ptr[(i * 17) % n];
 

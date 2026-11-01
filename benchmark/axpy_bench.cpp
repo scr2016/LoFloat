@@ -93,7 +93,7 @@ BenchResult<TY> bench_axpy(
 
         // Warmup
         for (int w = 0; w < warmup_iters; ++w) {
-            lo_float::axpy<TA, TX, TY, arch>(n, a, x.data(), 1, y.data(), 1, mode);
+            lo_float::axpy<TA, TX, TY, arch>(n, a, x.data(), 1, y.data(), 1, lo_float::ProjSpec(mode));
             g_sink += static_cast<float>(y[w % n]);
         }
 
@@ -108,7 +108,7 @@ BenchResult<TY> bench_axpy(
         for (int i = 0; i < iters_used; ++i) {
             auto t0 = std::chrono::steady_clock::now();
 
-            lo_float::axpy<TA, TX, TY, arch>(n, a, x.data(), 1, y.data(), 1, mode);
+            lo_float::axpy<TA, TX, TY, arch>(n, a, x.data(), 1, y.data(), 1, lo_float::ProjSpec(mode));
 
             auto t1 = std::chrono::steady_clock::now();
 
