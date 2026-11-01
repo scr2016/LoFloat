@@ -18,4 +18,4 @@ Existing clone:
 git submodule update --init --recursive
 ```
 
-Build PyTorch extension either via `./install.sh` or `USE_CUDA=1 pip install -e /path/to/LoFloat --no-build-isolation`).
+Build PyTorch extension either via `USE_CUDA=1 ./install.sh` or `USE_CUDA=1 pip install -e /path/to/LoFloat --no-build-isolation`).
