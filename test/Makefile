@@ -111,36 +111,36 @@ endif
 
 # Build rule
 ifeq ($(CUDA_AVAILABLE),yes)
-	ifeq ($(USE_CUDA_VAR),1)
-	test_gemm_cuda: gemm_test.cu
-		$(NVCC) $(NVCCFLAGS) -w -Xcompiler -w -v -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@ -lcublas > build_log.txt 2>&1
+ifeq ($(USE_CUDA_VAR),1)
+test_gemm_cuda: gemm_test.cu
+	$(NVCC) $(NVCCFLAGS) -w -Xcompiler -w -v -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@ -lcublas > build_log.txt 2>&1
 
-	test_round_to_odd: round_to_odd.cu
-		$(NVCC) $(NVCCFLAGS) -w -Xcompiler -w -v -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@ -lcublas > build_log.txt 2>&1
+test_round_to_odd: round_to_odd.cu
+	$(NVCC) $(NVCCFLAGS) -w -Xcompiler -w -v -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@ -lcublas > build_log.txt 2>&1
 
-	test_virtual_round_cuda: test_virtual_round.cu
-		$(NVCC) $(NVCCFLAGS) -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
+test_virtual_round_cuda: test_virtual_round.cu
+	$(NVCC) $(NVCCFLAGS) -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
 
-	test_virtual_mx_round_cuda: test_virtual_mx_round_cuda.cu
-		$(NVCC) $(NVCCFLAGS) -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
+test_virtual_mx_round_cuda: test_virtual_mx_round_cuda.cu
+	$(NVCC) $(NVCCFLAGS) -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
 
-	perf_mx_round_cuda: perf_mx_round_cuda.cu
-		$(NVCC) $(NVCCFLAGS) -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
+perf_mx_round_cuda: perf_mx_round_cuda.cu
+	$(NVCC) $(NVCCFLAGS) -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
 
-	test_conv2d_cuda: test_conv2d_cuda.cu
-		$(NVCC) $(NVCCFLAGS) -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
+test_conv2d_cuda: test_conv2d_cuda.cu
+	$(NVCC) $(NVCCFLAGS) -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
 
-	test_fixed_point_cuda: test_fixed_point_cuda.cu
-		$(NVCC) $(NVCCFLAGS) -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
+test_fixed_point_cuda: test_fixed_point_cuda.cu
+	$(NVCC) $(NVCCFLAGS) -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
 
-	# i_n is not LOFLOAT_HOST_DEVICE-annotated; --expt-relaxed-constexpr lets its
-	# constexpr (host) operators run in device code.
-	test_lo_int_cuda: test_lo_int_cuda.cu
-		$(NVCC) $(NVCCFLAGS) --expt-relaxed-constexpr -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
+# i_n is not LOFLOAT_HOST_DEVICE-annotated; --expt-relaxed-constexpr lets its
+# constexpr (host) operators run in device code.
+test_lo_int_cuda: test_lo_int_cuda.cu
+	$(NVCC) $(NVCCFLAGS) --expt-relaxed-constexpr -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
 
-	test_pack_cuda: test_pack_cuda.cu
-		$(NVCC) $(NVCCFLAGS) --expt-relaxed-constexpr -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
-	endif
+test_pack_cuda: test_pack_cuda.cu
+	$(NVCC) $(NVCCFLAGS) --expt-relaxed-constexpr -DUSE_CUDA -w -Xcompiler -w -arch=$(CUDA_ARCH) $(INCLUDE_PATH) $< -o $@
+endif
 endif
 # Default / "all" option
 all: $(ALL_EXEC)

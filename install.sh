@@ -11,7 +11,7 @@ git submodule update --init --recursive
 
 # ---- 1. C++ headers via CMake ----
 echo "==> Installing C++ headers..."
-cmake -B build -DCUDAToolkit_ROOT=/usr/local/cuda-13.2
+cmake -B build
 cmake --build build
 
 # ---- 2. Python/Torch extension ----
@@ -24,6 +24,7 @@ if [[ -z "$VIRTUAL_ENV" && -z "$CONDA_PREFIX" ]]; then
     [[ "$yn" =~ ^[Yy]$ ]] || exit 1
 fi
 
-pip install -e . --no-build-isolation
+pip install -e .
+# --no-build-isolation
 
 echo "==> Done. Headers installed system-wide; Python package installed in editable mode."
